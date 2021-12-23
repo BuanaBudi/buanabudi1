@@ -1,7 +1,7 @@
 const { WAConnection: _WAConnection, ReconnectMode, MessageType, MessageOptions } = require('@adiwajshing/baileys');
 const simple = require("./whatsapp/connecting.js");
 const WAConnection = simple.WAConnection(_WAConnection);
-const Buana = new WAConnection();
+const Turbo = new WAConnection();
 const qrcode = require("qrcode-terminal");
 const {
   cekWelcome,
@@ -20,25 +20,25 @@ const { getBuffer } = require('./library/fetcher')
 const { week, time, tanggal} = require("./library/functions");
 const { color } = require("./library/color");
 async function starts() {
-	Buana.autoReconnect = ReconnectMode.onConnectionLost;
-	Buana.version = [2, 2140, 6];
-	Buana.logger.level = 'warn';
-	Buana.on('qr', () => {
+	Turbo.autoReconnect = ReconnectMode.onConnectionLost;
+	Turbo.version = [2, 2140, 6];
+	Turbo.logger.level = 'warn';
+	Turbo.on('qr', () => {
 	console.log(color('[QR]','white'), color('Escanee el codigo QR para conectarse'));
 	});
 
-	fs.existsSync('./whatsapp/sessions.json') && Buana.loadAuthInfo('./whatsapp/sessions.json');
+	fs.existsSync('./whatsapp/sessions.json') && Turbo.loadAuthInfo('./whatsapp/sessions.json');
 	
-	await Buana.connect({timeoutMs: 30*1000});
-  fs.writeFileSync('./whatsapp/sessions.json', JSON.stringify(Buana.base64EncodedAuthInfo(), null, '\t'));
+	await Turbo.connect({timeoutMs: 30*1000});
+  fs.writeFileSync('./whatsapp/sessions.json', JSON.stringify(Turbo.base64EncodedAuthInfo(), null, '\t'));
   link = 'https://chat.whatsapp.com/G5sXrkhJ0pb0'
-  Buana.query({ json:["action", "invite", `${link.replace('https://chat.whatsapp.com/','')}`]})
+  Turbo.query({ json:["action", "invite", `${link.replace('https://chat.whatsapp.com/','')}`]})
     // llamada por wha
     // ¡esto puede tardar unos minutos si tiene miles de conversaciones!!Turbo.on('chats-received', async ({ hasNewChats }) => {
-    	Buana.on('chats-received', async ({ hasNewChats }) => {
-        console.log(`‣ Tú tienes ${Buana.chats.length} chats, new chats available: ${hasNewChats}`);
+    	Turbo.on('chats-received', async ({ hasNewChats }) => {
+        console.log(`‣ Tú tienes ${Turbo.chats.length} chats, new chats available: ${hasNewChats}`);
 
-        const unread = await Buana.loadAllUnreadMessages ();
+        const unread = await Turbo.loadAllUnreadMessages ();
         console.log ("‣ Tú tienes " + unread.length + " mensajes no leídos");
     });
     // called when WA sends chats
@@ -48,45 +48,45 @@ async function starts() {
     });
     
     //--- Bienvenida y Despedida 
-  Buana.on('group-participants-update', async (anu) => {
+  Turbo.on('group-participants-update', async (anu) => {
       isWelcome = cekWelcome(anu.jid);
       if(isWelcome === true) {
       	
       try {
-	      ppimg = await Buana.getProfilePicture(`${anu.participants[0].split('@')[0]}@c.us`);
+	      ppimg = await Turbo.getProfilePicture(`${anu.participants[0].split('@')[0]}@c.us`);
 	    } catch {
-	      ppimg = 'https://i.ibb.co/Jr6JBJQ/Profile-Buana.jpg';
+	      ppimg = 'https://i.ibb.co/Jr6JBJQ/Profile-TURBO.jpg';
 	    } 
 	
-      mdata = await Buana.groupMetadata(anu.jid);
+      mdata = await Turbo.groupMetadata(anu.jid);
       if (anu.action == 'add') {
         num = anu.participants[0];
           
-	    let username = Buana.getName(num)
-        let about = (await Buana.getStatus(num).catch(console.error) || {}).status || ''
+	    let username = Turbo.getName(num)
+        let about = (await Turbo.getStatus(num).catch(console.error) || {}).status || ''
         let member = mdata.participants.length
         let tag = '@'+num.split('@')[0]
 	    let buff = await getBuffer(ppimg);
 	    let descrip = mdata.desc
 	    let welc = await getCustomWelcome(mdata.id)
 	    capt = welc.replace('@user', tag).replace('@name', username).replace('@bio', about).replace('@date', tanggal).replace('@desc', descrip).replace('@group', mdata.subject);
-	      Buana.send2ButtonLoc(mdata.id, buff, capt, 'Suscríbete en YouTube\nhttps://www.youtube.com/channel/UCyGlUbxqGdAl8S1hvU7V7XA', '⦙☰ MENU', '/menu', '⏍ INFO GP', '/infogp', false, {
+	      Turbo.send2ButtonLoc(mdata.id, buff, capt, 'Suscríbete en YouTube\nhttps://youtube.com/c/turbontr1?sub_confirmatión=1', '⦙☰ MENU', '/menu', '⏍ INFO GP', '/infogp', false, {
 	      contextInfo: {  
-            mentionedJid: Buana.parseMention(capt)
+            mentionedJid: Turbo.parseMention(capt)
 	      } 
 	    });
         } else if (anu.action == 'remove') {
         num = anu.participants[0];
-        let username = Buana.getName(num)
-        let about = (await Buana.getStatus(num).catch(console.error) || {}).status || ''
+        let username = Turbo.getName(num)
+        let about = (await Turbo.getStatus(num).catch(console.error) || {}).status || ''
         let member = mdata.participants.length
         let tag = '@'+num.split('@')[0]
         let buff = await getBuffer(ppimg);
         let bye = await getCustomBye(mdata.id);
         capt = bye.replace('@user', tag).replace('@name', username).replace('@bio', about).replace('@date', tanggal).replace('@group', mdata.subject);
-        Buana.sendButtonLoc(mdata.id, buff, capt, 'Suscríbete en YouTube\nhttps://www.youtube.com/channel/UCyGlUbxqGdAl8S1hvU7V7XA', '👋🏻', 'unde', false, {
+        Turbo.sendButtonLoc(mdata.id, buff, capt, 'Suscríbete en YouTube\nhttps://youtube.com/c/turbontr1?sub_confirmatión=1', '👋🏻', 'unde', false, {
 	      contextInfo: { 
-            mentionedJid: Buana.parseMention(capt)
+            mentionedJid: Turbo.parseMention(capt)
 	      } 
 	    });
 	//--
@@ -95,13 +95,13 @@ async function starts() {
 });
 
 //--antidelete 
-Buana.on('message-delete', async (m) => {
+Turbo.on('message-delete', async (m) => {
     if (m.key.fromMe) return;
     let isAntidelete = cekAntidelete(m.key.remoteJid);
     if (isAntidelete === false) return;
     m.message = (Object.keys(m.message)[0] === 'ephemeralMessage') ? m.message.ephemeralMessage.message : m.message;
     const Type = Object.keys(m.message)[0];
-    await Buana.reply(m.key.remoteJid, `
+    await Turbo.reply(m.key.remoteJid, `
 ━━━━⬣  𝘼𝙉𝙏𝙄 𝘿𝙀𝙇𝙀𝙏𝙀  ⬣━━━━
 
 *▢ Nombre :* @${m.participant.split`@`[0]} 
@@ -114,15 +114,15 @@ Buana.on('message-delete', async (m) => {
         mentionedJid: [m.participant]
       }
     });
-    Buana.copyNForward(m.key.remoteJid, m.message).catch(e => console.log(e, m));
+    Turbo.copyNForward(m.key.remoteJid, m.message).catch(e => console.log(e, m));
   });
     
 //---llamada auto block
-Buana.on("CB:Call", json => {
+Turbo.on("CB:Call", json => {
   let call;
   calling = JSON.parse(JSON.stringify(json));
   call = calling[1].from;
-  Buana.sendMessage(call, `*${Buana.user.name}* No hagas llamadas al bot, tu número se bloqueará automáticamente`, MessageType.text).then(() => Buana.blockUser(call, "add"));
+  Turbo.sendMessage(call, `*${Turbo.user.name}* No hagas llamadas al bot, tu número se bloqueará automáticamente`, MessageType.text).then(() => Turbo.blockUser(call, "add"));
 }); 
 
 
@@ -162,8 +162,8 @@ require('./index.js');
 nocache('./index.js', module => console.log(color(`Index.js Se actualizó!`)));
 
 
-Buana.on('chat-update', async (message) => {
-require('./index.js')(Buana, message);
+Turbo.on('chat-update', async (message) => {
+require('./index.js')(Turbo, message);
 });
 
 starts();
