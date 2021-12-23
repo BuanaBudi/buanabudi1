@@ -16,7 +16,7 @@ CFonts.say('Buana', {
   align: 'center',
   gradient: ['red', 'magenta']
 })
-CFonts.say(`BuanaBudi By Buana`, {
+CFonts.say(`buanabudi1 By Buana`, {
   font: 'console',
   align: 'center',
   colors: ['yellow']
